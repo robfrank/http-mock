@@ -52,7 +52,7 @@ public class ProgrammableHandlerTest {
 
 		ContentExchange content = new ContentExchange();
 		content.setURL("http://localhost:8888/index.html");
-		
+
 		httpClient.send(content);
 
 		content.waitForDone();
@@ -72,7 +72,7 @@ public class ProgrammableHandlerTest {
 
 		ContentExchange content = new ContentExchange();
 		content.setURL("http://localhost:8888/index.php");
-		
+
 		httpClient.send(content);
 
 		content.waitForDone();
