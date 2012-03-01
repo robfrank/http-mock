@@ -1,4 +1,4 @@
-package it.csi.indexer;
+package it.celi.test.httpMock;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,46 +14,50 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import com.google.common.base.Joiner;
 
-import static it.celi.util.ObjectUtil.isNull;
-
 public class ProgrammableHandler extends AbstractHandler {
 
-	private final Map<String, HttpResponder> urlToFile;
+	private final Map<String, HttpResponder> urlToHttpResponder;
 
 	private final HttpResponder defaultResponder;
 
 	public ProgrammableHandler() {
-		urlToFile = new HashMap<String, HttpResponder>();
+		urlToHttpResponder = new HashMap<String, HttpResponder>();
 		defaultResponder = new StatusCodeResponder(HttpServletResponse.SC_NOT_FOUND);
 	}
 
 	@Override
 	public void handle(String url, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		baseRequest.setHandled(true);
+		
 		String lookup = Joiner.on('?').skipNulls().join(url, baseRequest.getQueryString());
 
-		HttpResponder responder = urlToFile.get(lookup);
+		HttpResponder responder = lookupResponder(lookup);
 
-		if (isNull(responder)) defaultResponder.reply(response);
-
-		else responder.reply(response);
-
-		baseRequest.setHandled(true);
+		responder.reply(response);
 		
 	}
 
+	private HttpResponder lookupResponder(String url) {
+		HttpResponder responder = urlToHttpResponder.get(url);
+
+		if (responder == null) return defaultResponder;
+
+		return responder;
+
+	}
+
 	public ProgrammableHandler map(String url, HttpResponder responder) {
-		urlToFile.put(url, responder);
+		urlToHttpResponder.put(url, responder);
 		return this;
 	}
 
 	public ProgrammableHandler map(String url, File file) {
-		urlToFile.put(url, new FileContentResponder(file));
+		urlToHttpResponder.put(url, new FileContentResponder(file));
 		return this;
 	}
 
 	public ProgrammableHandler map(String url, int status) {
-		urlToFile.put(url, new StatusCodeResponder(status));
+		urlToHttpResponder.put(url, new StatusCodeResponder(status));
 		return this;
 	}
 

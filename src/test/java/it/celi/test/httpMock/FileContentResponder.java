@@ -1,4 +1,4 @@
-package it.csi.indexer;
+package it.celi.test.httpMock;
 
 import java.io.File;
 import java.io.FileReader;
@@ -9,6 +9,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+
 
 public class FileContentResponder implements HttpResponder {
 

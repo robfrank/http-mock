@@ -1,4 +1,4 @@
-package it.csi.indexer;
+package it.celi.test.httpMock;
 
 import java.io.IOException;
 
