@@ -9,8 +9,8 @@ Code speaks better:
 		// file to be serverd
 		File html = new File("./src/test/resources/ProgrammableHandlerTest.html");
 		ProgrammableHandler handler = new ProgrammableHandler()
-				.map("/index.html", html)
-				.map("/index.php", HttpServletResponse.SC_NOT_FOUND);
+				.handle("/index.html", html)
+				.handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
 
 		// start the server
 		Server httpServer = new Server(8888);
