@@ -13,7 +13,6 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
 
 public class ProgrammableHandler extends AbstractHandler {
 
