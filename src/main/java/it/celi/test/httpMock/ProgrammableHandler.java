@@ -13,6 +13,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 
 public class ProgrammableHandler extends AbstractHandler {
 
@@ -20,21 +21,24 @@ public class ProgrammableHandler extends AbstractHandler {
 
 	private final HttpResponder defaultResponder;
 
+	private final Joiner urlQueryJoiner;
+
 	public ProgrammableHandler() {
 		urlToHttpResponder = new HashMap<String, HttpResponder>();
 		defaultResponder = new StatusCodeResponder(HttpServletResponse.SC_NOT_FOUND);
+		urlQueryJoiner = Joiner.on('?').skipNulls();
 	}
 
 	@Override
 	public void handle(String url, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		baseRequest.setHandled(true);
-		
-		String lookup = Joiner.on('?').skipNulls().join(url, baseRequest.getQueryString());
+
+		String lookup = urlQueryJoiner.join(url, baseRequest.getQueryString());
 
 		HttpResponder responder = lookupResponder(lookup);
 
 		responder.reply(response);
-		
+
 	}
 
 	private HttpResponder lookupResponder(String url) {
@@ -46,17 +50,17 @@ public class ProgrammableHandler extends AbstractHandler {
 
 	}
 
-	public ProgrammableHandler map(String url, HttpResponder responder) {
+	public ProgrammableHandler handle(final String url, final HttpResponder responder) {
 		urlToHttpResponder.put(url, responder);
 		return this;
 	}
 
-	public ProgrammableHandler map(String url, File file) {
+	public ProgrammableHandler handle(final String url, final File file) {
 		urlToHttpResponder.put(url, new FileContentResponder(file));
 		return this;
 	}
 
-	public ProgrammableHandler map(String url, int status) {
+	public ProgrammableHandler handle(final String url, final int status) {
 		urlToHttpResponder.put(url, new StatusCodeResponder(status));
 		return this;
 	}

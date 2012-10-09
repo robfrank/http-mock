@@ -1,11 +1,10 @@
 package it.celi.test.httpMock;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpExchange;
@@ -16,7 +15,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import com.google.common.io.Files;
+
+import static org.hamcrest.Matchers.equalTo;
+
+import static org.junit.Assert.assertThat;
 
 public class ProgrammableHandlerTest {
 
@@ -31,8 +34,8 @@ public class ProgrammableHandlerTest {
 		html = new File("./src/test/resources/ProgrammableHandlerTest.html");
 
 		ProgrammableHandler handler = new ProgrammableHandler()
-				.map("/index.html", html)
-				.map("/index.php", HttpServletResponse.SC_NOT_FOUND);
+				.handle("/index.html", html)
+				.handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
 
 		// start the server
 		httpServer = new Server(8888);
@@ -61,15 +64,29 @@ public class ProgrammableHandlerTest {
 
 		httpClient.send(content);
 
-		assertEquals(HttpExchange.STATUS_COMPLETED, content.waitForDone());
+		assertThat(content.waitForDone(), equalTo(HttpExchange.STATUS_COMPLETED));
 
-		assertEquals(HttpStatus.OK_200, content.getResponseStatus());
+		assertThat(content.getResponseStatus(), equalTo(HttpStatus.OK_200));
 
 		String contentFromHttp = content.getResponseContent();
 
-		String contentFromFile = IOUtils.toString(new FileInputStream(html), "UTF-8");
+		String contentFromFile = Files.toString(html, Charset.forName("UTF-8"));
 
-		assertEquals(contentFromFile, contentFromHttp);
+		assertThat(contentFromHttp, equalTo(contentFromFile));
+
+	}
+
+	@Test
+	public void souldGet404From404MapperUrl() throws Exception {
+
+		ContentExchange content = new ContentExchange();
+		content.setURL("http://localhost:8888/index.php");
+
+		httpClient.send(content);
+
+		assertThat(content.waitForDone(), equalTo(HttpExchange.STATUS_COMPLETED));
+
+		assertThat(content.getResponseStatus(), equalTo(HttpStatus.NOT_FOUND_404));
 
 	}
 
@@ -77,13 +94,13 @@ public class ProgrammableHandlerTest {
 	public void souldGet404FromWrongURL() throws Exception {
 
 		ContentExchange content = new ContentExchange();
-		content.setURL("http://localhost:8888/index.php");
+		content.setURL("http://localhost:8888/wrong.html");
 
 		httpClient.send(content);
 
-		assertEquals(HttpExchange.STATUS_COMPLETED, content.waitForDone());
+		assertThat(content.waitForDone(), equalTo(HttpExchange.STATUS_COMPLETED));
 
-		assertEquals(HttpStatus.NOT_FOUND_404, content.getResponseStatus());
+		assertThat(content.getResponseStatus(), equalTo(HttpStatus.NOT_FOUND_404));
 
 	}
 

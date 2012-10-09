@@ -1,14 +1,13 @@
 package it.celi.test.httpMock;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
+import com.google.common.io.Files;
 
 
 public class FileContentResponder implements HttpResponder {
@@ -23,9 +22,7 @@ public class FileContentResponder implements HttpResponder {
 	@Override
 	public void reply(HttpServletResponse response) throws IOException, ServletException {
 		ServletOutputStream outputStream = response.getOutputStream();
-
-		IOUtils.copy(new FileReader(file), outputStream);
-		outputStream.flush();
+		Files.copy(file, outputStream);
 	}
 
 }
