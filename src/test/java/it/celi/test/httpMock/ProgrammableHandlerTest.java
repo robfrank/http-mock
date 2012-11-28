@@ -1,25 +1,22 @@
 package it.celi.test.httpMock;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
 import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpExchange;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.io.Files;
-
-import static org.hamcrest.Matchers.equalTo;
-
-import static org.junit.Assert.assertThat;
 
 public class ProgrammableHandlerTest {
 
@@ -39,7 +36,7 @@ public class ProgrammableHandlerTest {
 
 		// start the server
 		httpServer = new Server(8888);
-		httpServer.addConnector(new SelectChannelConnector());
+		// httpServer.addConnector(new SelectChannelConnector());
 		httpServer.setHandler(handler);
 		httpServer.start();
 
@@ -59,16 +56,11 @@ public class ProgrammableHandlerTest {
 	@Test
 	public void shouldGetContentFromHttp() throws Exception {
 
-		ContentExchange content = new ContentExchange();
-		content.setURL("http://localhost:8888/index.html");
+		ContentResponse response = httpClient.GET("http://localhost:8888/index.html").get();
 
-		httpClient.send(content);
+		assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
 
-		assertThat(content.waitForDone(), equalTo(HttpExchange.STATUS_COMPLETED));
-
-		assertThat(content.getResponseStatus(), equalTo(HttpStatus.OK_200));
-
-		String contentFromHttp = content.getResponseContent();
+		String contentFromHttp = response.getContentAsString();
 
 		String contentFromFile = Files.toString(html, Charset.forName("UTF-8"));
 
@@ -79,28 +71,18 @@ public class ProgrammableHandlerTest {
 	@Test
 	public void souldGet404From404MapperUrl() throws Exception {
 
-		ContentExchange content = new ContentExchange();
-		content.setURL("http://localhost:8888/index.php");
+		ContentResponse response = httpClient.GET("http://localhost:8888/index.php").get();
 
-		httpClient.send(content);
-
-		assertThat(content.waitForDone(), equalTo(HttpExchange.STATUS_COMPLETED));
-
-		assertThat(content.getResponseStatus(), equalTo(HttpStatus.NOT_FOUND_404));
+		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
 
 	}
 
 	@Test
 	public void souldGet404FromWrongURL() throws Exception {
 
-		ContentExchange content = new ContentExchange();
-		content.setURL("http://localhost:8888/wrong.html");
+		ContentResponse response = httpClient.GET("http://localhost:8888/wrong.html").get();
 
-		httpClient.send(content);
-
-		assertThat(content.waitForDone(), equalTo(HttpExchange.STATUS_COMPLETED));
-
-		assertThat(content.getResponseStatus(), equalTo(HttpStatus.NOT_FOUND_404));
+		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
 
 	}
 
