@@ -14,7 +14,6 @@ Code speaks better:
 
 		// start the server
 		Server httpServer = new Server(8888);
-		httpServer.addConnector(new SelectChannelConnector());
 		httpServer.setHandler(handler);
 		httpServer.start();
 
