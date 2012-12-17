@@ -1,0 +1,8 @@
+language: java
+notifications:
+  email:
+    - ro.franchini@gmail.com
+jdk:
+  - oraclejdk7
+  - openjdk7
+  - openjdk6
