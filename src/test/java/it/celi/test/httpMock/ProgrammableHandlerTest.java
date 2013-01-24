@@ -56,7 +56,7 @@ public class ProgrammableHandlerTest {
 	@Test
 	public void shouldGetContentFromHttp() throws Exception {
 
-		ContentResponse response = httpClient.GET("http://localhost:8888/index.html").get();
+		ContentResponse response = httpClient.GET("http://localhost:8888/index.html");
 
 		assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
 
@@ -71,7 +71,7 @@ public class ProgrammableHandlerTest {
 	@Test
 	public void souldGet404From404MapperUrl() throws Exception {
 
-		ContentResponse response = httpClient.GET("http://localhost:8888/index.php").get();
+		ContentResponse response = httpClient.GET("http://localhost:8888/index.php");
 
 		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
 
@@ -80,7 +80,7 @@ public class ProgrammableHandlerTest {
 	@Test
 	public void souldGet404FromWrongURL() throws Exception {
 
-		ContentResponse response = httpClient.GET("http://localhost:8888/wrong.html").get();
+		ContentResponse response = httpClient.GET("http://localhost:8888/wrong.html");
 
 		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
 
