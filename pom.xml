@@ -4,7 +4,7 @@
 
 	<groupId>it.celi</groupId>
 	<artifactId>http-mock</artifactId>
-	<version>1.4-SNAPSHOT</version>
+	<version>1.4</version>
 	<name>http-mock</name>
 	<properties>
 		<jetty.version>9.0.4.v20130625</jetty.version>
