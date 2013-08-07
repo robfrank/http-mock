@@ -11,9 +11,9 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:git://github.com/robfrank/http-mock.git</connection>
-		<url>scm:git:git://github.com/robfrank/http-mock.git</url>
-		<developerConnection>scm:git:git://github.com/robfrank/http-mock.git</developerConnection>
+		<connection>scm:git:https://github.com/robfrank/http-mock.git</connection>
+		<url>scm:git:https://github.com/robfrank/http-mock.git</url>
+		<developerConnection>scm:git:https://github.com/robfrank/http-mock.git</developerConnection>
 	</scm>
 	<distributionManagement>
 		<repository>
