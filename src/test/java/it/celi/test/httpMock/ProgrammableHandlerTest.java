@@ -50,7 +50,6 @@ public class ProgrammableHandlerTest {
 	public static void shutdownServerAndClient() throws Exception {
 		httpClient.stop();
 		httpServer.stop();
-
 	}
 
 	@Test
