@@ -10,11 +10,11 @@
 		<jetty.version>9.0.5.v20130815</jetty.version>
 	</properties>
 
-	<scm>
+	<!--scm>
 		<connection>scm:git:https://github.com/robfrank/http-mock.git</connection>
 		<url>scm:git:https://github.com/robfrank/http-mock.git</url>
 		<developerConnection>scm:git:https://github.com/robfrank/http-mock.git</developerConnection>
-	</scm>
+	</scm-->
 	<distributionManagement>
 		<repository>
 			<id>${repo-release-id}</id>
