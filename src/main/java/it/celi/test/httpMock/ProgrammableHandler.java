@@ -12,20 +12,25 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
 
 public class ProgrammableHandler extends AbstractHandler {
 
-	private final Map<String, HttpResponder> urlToHttpResponder;
+	private final Function<String, HttpResponder> responders;
 
-	private final HttpResponder defaultResponder;
+	private final Map<String, HttpResponder> urlToHttpResponder;
 
 	private final Joiner urlQueryJoiner;
 
 	public ProgrammableHandler() {
 		urlToHttpResponder = new HashMap<String, HttpResponder>();
-		defaultResponder = new StatusCodeResponder(HttpServletResponse.SC_NOT_FOUND);
 		urlQueryJoiner = Joiner.on('?').skipNulls();
+		
+		HttpResponder defaultResponder = new StatusCodeResponder(HttpServletResponse.SC_NOT_FOUND);
+
+		responders = Functions.forMap(urlToHttpResponder, defaultResponder);
 	}
 
 	@Override
@@ -34,18 +39,9 @@ public class ProgrammableHandler extends AbstractHandler {
 
 		String lookup = urlQueryJoiner.join(url, baseRequest.getQueryString());
 
-		HttpResponder responder = lookupResponder(lookup);
+		HttpResponder responder = responders.apply(lookup);
 
 		responder.reply(response);
-
-	}
-
-	private HttpResponder lookupResponder(String url) {
-		HttpResponder responder = urlToHttpResponder.get(url);
-
-		if (responder == null) return defaultResponder;
-
-		return responder;
 
 	}
 
