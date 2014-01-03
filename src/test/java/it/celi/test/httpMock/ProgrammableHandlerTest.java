@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
 import org.junit.AfterClass;
@@ -39,7 +40,6 @@ public class ProgrammableHandlerTest {
 		// httpServer.addConnector(new SelectChannelConnector());
 		httpServer.setHandler(handler);
 		httpServer.start();
-
 		// start the client
 		httpClient = new HttpClient();
 		httpClient.start();
@@ -65,6 +65,7 @@ public class ProgrammableHandlerTest {
 
 		assertThat(contentFromHttp, equalTo(contentFromFile));
 
+		assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("text/html"));
 	}
 
 	@Test
