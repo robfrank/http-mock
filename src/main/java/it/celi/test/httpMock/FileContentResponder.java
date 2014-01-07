@@ -21,7 +21,7 @@ public class FileContentResponder implements HttpResponder {
 		this.file = file;
 
 		MimeTypes mimeTypes = new MimeTypes();
-
+		mimeTypes.addMimeMapping("json", "application/json");
 		mime = mimeTypes.getMimeByExtension(file.getName());
 
 	}

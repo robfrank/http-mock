@@ -24,15 +24,18 @@ public class ProgrammableHandlerTest {
 	private static Server httpServer;
 	private static File html;
 	private static HttpClient httpClient;
+	private static File json;
 
 	@BeforeClass
 	public static void startServerAndClient() throws Exception {
 
 		// file to be served as response
 		html = new File("./src/test/resources/ProgrammableHandlerTest.html");
+		json = new File("./src/test/resources/ProgrammableHandlerTest.json");
 
 		ProgrammableHandler handler = new ProgrammableHandler()
 				.handle("/index.html", html)
+				.handle("/data.json", json)
 				.handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
 
 		// start the server
@@ -66,6 +69,22 @@ public class ProgrammableHandlerTest {
 		assertThat(contentFromHttp, equalTo(contentFromFile));
 
 		assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("text/html"));
+	}
+
+	@Test
+	public void shouldGetJsonDataFromHttp() throws Exception {
+
+		ContentResponse response = httpClient.GET("http://localhost:8888/data.json");
+
+		assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+
+		assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/json"));
+		String contentFromHttp = response.getContentAsString();
+
+		String contentFromFile = Files.toString(json, Charset.forName("UTF-8"));
+
+		assertThat(contentFromHttp, equalTo(contentFromFile));
+
 	}
 
 	@Test
