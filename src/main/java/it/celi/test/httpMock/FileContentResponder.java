@@ -25,8 +25,11 @@ public class FileContentResponder implements HttpResponder {
 		
 		MimeTypes mime = new MimeTypes();
 		
-		mimeByExtension = mime.getMimeByExtension(file.getName());
-		
+		String name = file.getName();
+		System.out.println( name);
+		mimeByExtension = mime.getMimeByExtension(name);
+		System.out.println(mimeByExtension);
+		System.out.println( mimeByExtension.toString(Charset.defaultCharset()));
 	}
 
 	@Override

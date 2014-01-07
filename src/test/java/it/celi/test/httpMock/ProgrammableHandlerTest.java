@@ -33,9 +33,12 @@ public class ProgrammableHandlerTest {
 
 		// file to be served as response
 		html = new File("./src/test/resources/ProgrammableHandlerTest.html");
+		File json= new File("./src/test/resources/icsContentList.json");
 
+		
 		ProgrammableHandler handler = new ProgrammableHandler()
 				.handle("/index.html", html)
+				.handle("/index.json", json)
 				.handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
 
 		// start the server
@@ -63,6 +66,29 @@ public class ProgrammableHandlerTest {
 		ContentExchange exchange = new ContentExchange(true);
 		exchange.setMethod(HttpMethods.GET);
 		exchange.setURL("http://localhost:8888/index.html");
+
+		httpClient.send(exchange);
+
+		assertThat(exchange.waitForDone(), equalTo(HttpExchange.STATUS_COMPLETED));
+
+		assertThat(exchange.getResponseStatus(), equalTo(HttpStatus.OK_200));
+
+		String contentFromHttp = exchange.getResponseContent();
+
+		String contentFromFile = Files.toString(html, Charset.forName("UTF-8"));
+
+		assertThat(contentFromHttp, equalTo(contentFromFile));
+
+		assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), equalTo("text/html"));
+
+	}
+
+	@Test
+	public void shouldGetJsonContentFromHttp() throws Exception {
+
+		ContentExchange exchange = new ContentExchange(true);
+		exchange.setMethod(HttpMethods.GET);
+		exchange.setURL("http://localhost:8888/index.json");
 
 		httpClient.send(exchange);
 
