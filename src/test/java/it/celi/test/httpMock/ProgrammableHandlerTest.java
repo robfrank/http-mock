@@ -1,5 +1,8 @@
 package it.celi.test.httpMock;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
 import java.nio.charset.Charset;
 
@@ -11,7 +14,6 @@ import org.eclipse.jetty.client.HttpExchange;
 import org.eclipse.jetty.http.HttpHeaders;
 import org.eclipse.jetty.http.HttpMethods;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.junit.AfterClass;
@@ -19,9 +21,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.io.Files;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 public class ProgrammableHandlerTest {
 
