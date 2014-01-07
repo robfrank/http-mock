@@ -7,7 +7,7 @@
 	<version>1.0.1-SNAPSHOT</version>
 	<name>http-mock</name>
 	<properties>
-		<jetty.version>8.1.7.v20120910</jetty.version>
+		<jetty.version>8.1.14.v20131031</jetty.version>
 	</properties>
 
 	<scm>
@@ -22,7 +22,7 @@
 		</repository>
 		<snapshotRepository>
 			<id>${repo-snapshots-id}</id>
-			<url>${repo-snapshots-url}</url>
+			<url>${repo-snapshots-url}</url>	
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
