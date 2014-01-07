@@ -23,13 +23,11 @@ public class FileContentResponder implements HttpResponder {
 		super();
 		this.file = file;
 		
-		MimeTypes mime = new MimeTypes();
+		MimeTypes mimeTypes = new MimeTypes();
+		mimeTypes.addMimeMapping("json", "application/json");
 		
 		String name = file.getName();
-		System.out.println( name);
-		mimeByExtension = mime.getMimeByExtension(name);
-		System.out.println(mimeByExtension);
-		System.out.println( mimeByExtension.toString(Charset.defaultCharset()));
+		mimeByExtension = mimeTypes.getMimeByExtension(name);
 	}
 
 	@Override

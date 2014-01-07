@@ -27,18 +27,19 @@ public class ProgrammableHandlerTest {
 	private static Server httpServer;
 	private static File html;
 	private static HttpClient httpClient;
+	private static File json;
 
 	@BeforeClass
 	public static void startServerAndClient() throws Exception {
 
 		// file to be served as response
 		html = new File("./src/test/resources/ProgrammableHandlerTest.html");
-		File json= new File("./src/test/resources/icsContentList.json");
+		json = new File("./src/test/resources/ProgrammableHandlerTest.json");
 
 		
 		ProgrammableHandler handler = new ProgrammableHandler()
 				.handle("/index.html", html)
-				.handle("/index.json", json)
+				.handle("/data.json", json)
 				.handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
 
 		// start the server
@@ -84,11 +85,11 @@ public class ProgrammableHandlerTest {
 	}
 
 	@Test
-	public void shouldGetJsonContentFromHttp() throws Exception {
+	public void shouldGetDataJsonContentFromHttp() throws Exception {
 
 		ContentExchange exchange = new ContentExchange(true);
 		exchange.setMethod(HttpMethods.GET);
-		exchange.setURL("http://localhost:8888/index.json");
+		exchange.setURL("http://localhost:8888/data.json");
 
 		httpClient.send(exchange);
 
@@ -96,13 +97,13 @@ public class ProgrammableHandlerTest {
 
 		assertThat(exchange.getResponseStatus(), equalTo(HttpStatus.OK_200));
 
+		assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), equalTo("application/json"));
 		String contentFromHttp = exchange.getResponseContent();
 
-		String contentFromFile = Files.toString(html, Charset.forName("UTF-8"));
+		String contentFromFile = Files.toString(json, Charset.forName("UTF-8"));
 
 		assertThat(contentFromHttp, equalTo(contentFromFile));
 
-		assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), equalTo("text/html"));
 
 	}
 
