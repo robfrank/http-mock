@@ -8,7 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpExchange;
+import org.eclipse.jetty.http.HttpHeaders;
+import org.eclipse.jetty.http.HttpMethods;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.junit.AfterClass;
@@ -18,7 +21,6 @@ import org.junit.Test;
 import com.google.common.io.Files;
 
 import static org.hamcrest.Matchers.equalTo;
-
 import static org.junit.Assert.assertThat;
 
 public class ProgrammableHandlerTest {
@@ -59,20 +61,23 @@ public class ProgrammableHandlerTest {
 	@Test
 	public void shouldGetContentFromHttp() throws Exception {
 
-		ContentExchange content = new ContentExchange();
-		content.setURL("http://localhost:8888/index.html");
+		ContentExchange exchange = new ContentExchange(true);
+		exchange.setMethod(HttpMethods.GET);
+		exchange.setURL("http://localhost:8888/index.html");
 
-		httpClient.send(content);
+		httpClient.send(exchange);
 
-		assertThat(content.waitForDone(), equalTo(HttpExchange.STATUS_COMPLETED));
+		assertThat(exchange.waitForDone(), equalTo(HttpExchange.STATUS_COMPLETED));
 
-		assertThat(content.getResponseStatus(), equalTo(HttpStatus.OK_200));
+		assertThat(exchange.getResponseStatus(), equalTo(HttpStatus.OK_200));
 
-		String contentFromHttp = content.getResponseContent();
+		String contentFromHttp = exchange.getResponseContent();
 
 		String contentFromFile = Files.toString(html, Charset.forName("UTF-8"));
 
 		assertThat(contentFromHttp, equalTo(contentFromFile));
+
+		assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), equalTo("text/html"));
 
 	}
 
