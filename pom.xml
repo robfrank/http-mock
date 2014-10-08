@@ -6,7 +6,7 @@
 	<version>1.5.2-SNAPSHOT</version>
 	<name>http-mock: mock the web</name>
 	<properties>
-		<jetty.version>9.1.0.v20131115</jetty.version>
+		<jetty.version>9.2.3.v20140905</jetty.version>
 	</properties>
 
 	<scm>
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>15.0</version>
+			<version>18.0</version>
 		</dependency>
 
 

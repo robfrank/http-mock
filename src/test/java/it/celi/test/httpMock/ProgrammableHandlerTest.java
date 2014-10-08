@@ -21,88 +21,89 @@ import com.google.common.io.Files;
 
 public class ProgrammableHandlerTest {
 
-	private static Server httpServer;
-	private static File html;
-	private static HttpClient httpClient;
-	private static File json;
+    private static Server httpServer;
+    private static File html;
+    private static HttpClient httpClient;
+    private static File json;
 
-	@BeforeClass
-	public static void startServerAndClient() throws Exception {
+    @BeforeClass
+    public static void startServerAndClient() throws Exception {
 
-		// file to be served as response
-		html = new File("./src/test/resources/ProgrammableHandlerTest.html");
-		json = new File("./src/test/resources/ProgrammableHandlerTest.json");
+        // file to be served as response
+        html = new File("./src/test/resources/ProgrammableHandlerTest.html");
+        json = new File("./src/test/resources/ProgrammableHandlerTest.json");
 
-		ProgrammableHandler handler = new ProgrammableHandler()
-				.handle("/index.html", html)
-				.handle("/data.json", json)
-				.handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
+        final ProgrammableHandler handler = new ProgrammableHandler()
+                .handle("/index.html", html)
+                .handle("/data.json", json)
+                .handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
 
-		// start the server
-		httpServer = new Server(8888);
-		// httpServer.addConnector(new SelectChannelConnector());
-		httpServer.setHandler(handler);
-		httpServer.start();
-		// start the client
-		httpClient = new HttpClient();
-		httpClient.start();
+        // start the server
+        httpServer = new Server(8888);
+        // httpServer.addConnector(new SelectChannelConnector());
+        httpServer.setHandler(handler);
+        httpServer.start();
+        // start the client
+        httpClient = new HttpClient();
+        httpClient.start();
 
-	}
+    }
 
-	@AfterClass
-	public static void shutdownServerAndClient() throws Exception {
-		httpClient.stop();
-		httpServer.stop();
-	}
+    @AfterClass
+    public static void shutdownServerAndClient() throws Exception {
+        httpClient.stop();
+        httpServer.stop();
+    }
 
-	@Test
-	public void shouldGetContentFromHttp() throws Exception {
+    @Test
+    public void shouldGetContentFromHttp() throws Exception {
 
-		ContentResponse response = httpClient.GET("http://localhost:8888/index.html");
+        final ContentResponse response = httpClient.GET("http://localhost:8888/index.html");
 
-		assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+        assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
 
-		String contentFromHttp = response.getContentAsString();
+        assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("text/html"));
+        final String contentFromHttp = response.getContentAsString();
 
-		String contentFromFile = Files.toString(html, Charset.forName("UTF-8"));
+        final String contentFromFile = Files.toString(html, Charset.forName("UTF-8"));
 
-		assertThat(contentFromHttp, equalTo(contentFromFile));
+        assertThat(contentFromHttp, equalTo(contentFromFile));
 
-		assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("text/html"));
-	}
+    }
 
-	@Test
-	public void shouldGetJsonDataFromHttp() throws Exception {
 
-		ContentResponse response = httpClient.GET("http://localhost:8888/data.json");
+    @Test
+    public void shouldGetJsonDataFromHttp() throws Exception {
 
-		assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+        final ContentResponse response = httpClient.GET("http://localhost:8888/data.json");
 
-		assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/json"));
-		String contentFromHttp = response.getContentAsString();
+        assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
 
-		String contentFromFile = Files.toString(json, Charset.forName("UTF-8"));
+        assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/json"));
+        final String contentFromHttp = response.getContentAsString();
 
-		assertThat(contentFromHttp, equalTo(contentFromFile));
+        final String contentFromFile = Files.toString(json, Charset.forName("UTF-8"));
 
-	}
+        assertThat(contentFromHttp, equalTo(contentFromFile));
 
-	@Test
-	public void souldGet404From404MapperUrl() throws Exception {
+    }
 
-		ContentResponse response = httpClient.GET("http://localhost:8888/index.php");
+    @Test
+    public void souldGet404From404MapperUrl() throws Exception {
 
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
+        final ContentResponse response = httpClient.GET("http://localhost:8888/index.php");
 
-	}
+        assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
 
-	@Test
-	public void souldGet404FromWrongURL() throws Exception {
+    }
 
-		ContentResponse response = httpClient.GET("http://localhost:8888/wrong.html");
+    @Test
+    public void souldGet404FromWrongURL() throws Exception {
 
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
+        final ContentResponse response = httpClient.GET("http://localhost:8888/wrong.html");
 
-	}
+        assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
+
+    }
 
 }
