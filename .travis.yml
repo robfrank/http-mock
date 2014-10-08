@@ -4,4 +4,5 @@ notifications:
     - ro.franchini@gmail.com
 jdk:
   - oraclejdk7
+  - oraclejdk8
   - openjdk7
