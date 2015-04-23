@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.celi</groupId>
 	<artifactId>http-mock</artifactId>
-	<version>1.5.4-SNAPSHOT</version>
+	<version>1.5.4</version>
 	<name>http-mock: mock the web</name>
 	<properties>
 		<jetty.version>9.2.10.v20150310</jetty.version>
@@ -13,7 +13,8 @@
 		<!--connection>scm:git:https://github.com/robfrank/http-mock.git</connection>
 		<url>scm:git:https://github.com/robfrank/http-mock.git</url-->
 		<developerConnection>scm:git:git@github.com:robfrank/http-mock.git</developerConnection>
-	</scm>
+	  <tag>http-mock-1.5.4</tag>
+  </scm>
 	<distributionManagement>
 		<repository>
 			<id>${repo-release-id}</id>
