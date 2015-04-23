@@ -6,7 +6,7 @@
 	<version>1.5.2-SNAPSHOT</version>
 	<name>http-mock: mock the web</name>
 	<properties>
-		<jetty.version>9.2.3.v20140905</jetty.version>
+		<jetty.version>9.2.10.v20150310</jetty.version>
 	</properties>
 
 	<scm>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 
