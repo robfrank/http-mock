@@ -6,7 +6,7 @@
 	<version>1.5.5-SNAPSHOT</version>
 	<name>http-mock: mock the web</name>
 	<properties>
-		<jetty.version>9.2.10.v20150310</jetty.version>
+		<jetty.version>9.2.11.v20150529</jetty.version>
 	</properties>
 
 	<scm>
@@ -74,8 +74,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>

@@ -1,0 +1,14 @@
+build.number
+target/
+
+
+# Eclipse IDE files
+.classpath
+.project
+.settings/
+.prefs
+
+#IntelliJ IDEA files
+.iml
+.idea/
+

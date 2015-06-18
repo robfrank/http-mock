@@ -16,20 +16,19 @@ public class FileContentResponder implements HttpResponder {
 	private final File file;
 	private final String mime;
 
-	public FileContentResponder(File file) {
+	public FileContentResponder(final File file) {
 		super();
 		this.file = file;
 
-		MimeTypes mimeTypes = new MimeTypes();
-		mimeTypes.addMimeMapping("json", "application/json");
+		final MimeTypes mimeTypes = new MimeTypes();
 		mime = mimeTypes.getMimeByExtension(file.getName());
 
 	}
 
 	@Override
-	public void reply(HttpServletResponse response) throws IOException, ServletException {
+	public void reply(final HttpServletResponse response) throws IOException, ServletException {
 		response.setContentType(mime);
-		ServletOutputStream outputStream = response.getOutputStream();
+		final ServletOutputStream outputStream = response.getOutputStream();
 
 		Files.copy(file, outputStream);
 	}

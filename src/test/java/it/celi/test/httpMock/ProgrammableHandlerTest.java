@@ -1,10 +1,12 @@
 package it.celi.test.httpMock;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.file.Paths;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,6 +19,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
 public class ProgrammableHandlerTest {
@@ -25,6 +28,7 @@ public class ProgrammableHandlerTest {
     private static File html;
     private static HttpClient httpClient;
     private static File json;
+    private static List<File> xmls;
 
     @BeforeClass
     public static void startServerAndClient() throws Exception {
@@ -33,14 +37,19 @@ public class ProgrammableHandlerTest {
         html = new File("./src/test/resources/ProgrammableHandlerTest.html");
         json = new File("./src/test/resources/ProgrammableHandlerTest.json");
 
+        xmls = asList(new File("./src/test/resources/data1.xml")
+                , new File("./src/test/resources/data2.xml")
+                , new File("./src/test/resources/data3.xml"));
+
+        //configure handler
         final ProgrammableHandler handler = new ProgrammableHandler()
                 .handle("/index.html", html)
                 .handle("/data.json", json)
+                .handle("/", Paths.get("./src/test/resources/"), "*.xml")
                 .handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
 
         // start the server
         httpServer = new Server(8888);
-        // httpServer.addConnector(new SelectChannelConnector());
         httpServer.setHandler(handler);
         httpServer.start();
         // start the client
@@ -65,7 +74,7 @@ public class ProgrammableHandlerTest {
         assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("text/html"));
         final String contentFromHttp = response.getContentAsString();
 
-        final String contentFromFile = Files.toString(html, Charset.forName("UTF-8"));
+        final String contentFromFile = Files.toString(html, Charsets.UTF_8);
 
         assertThat(contentFromHttp, equalTo(contentFromFile));
 
@@ -82,11 +91,31 @@ public class ProgrammableHandlerTest {
         assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/json"));
         final String contentFromHttp = response.getContentAsString();
 
-        final String contentFromFile = Files.toString(json, Charset.forName("UTF-8"));
+        final String contentFromFile = Files.toString(json, Charsets.UTF_8);
 
         assertThat(contentFromHttp, equalTo(contentFromFile));
 
     }
+
+    @Test
+    public void shouldGetXmlsDataFromHttp() throws Exception {
+
+        for (final File xml : xmls) {
+
+            final ContentResponse response = httpClient.GET("http://localhost:8888/" + xml.getName());
+
+            assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+
+            assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/xml"));
+            final String contentFromHttp = response.getContentAsString();
+
+            final String contentFromFile = Files.toString(xml, Charsets.UTF_8);
+
+            assertThat(contentFromHttp, equalTo(contentFromFile));
+        }
+
+    }
+
 
     @Test
     public void souldGet404From404MapperUrl() throws Exception {
