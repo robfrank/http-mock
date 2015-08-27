@@ -41,6 +41,7 @@ public class ProgrammableHandler extends AbstractHandler {
             throws IOException, ServletException {
         baseRequest.setHandled(true);
 
+        
         final String lookup = urlQueryJoiner.join(url, baseRequest.getQueryString());
 
         final HttpResponder responder = responders.apply(lookup);
@@ -59,20 +60,45 @@ public class ProgrammableHandler extends AbstractHandler {
         return this;
     }
 
+    public ProgrammableHandler handle(final String url, final FileContentResponder fileResponder) {
+        urlToHttpResponder.put(url, fileResponder);
+        return this;
+    }
+
     public ProgrammableHandler handle(final String url, final Path path) {
         urlToHttpResponder.put(url, new PathContentResponder(path));
         return this;
     }
 
-    public ProgrammableHandler handle(final String url, final Path dir, final String glob) {
+    public ProgrammableHandler handle(final String url, final PathContentResponder pathResponder) {
+        urlToHttpResponder.put(url, pathResponder);
+        return this;
+    }
 
+    public ProgrammableHandler handle(final String url, final Path dir, final String glob) {
+        
         try {
             final DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dir, glob);
-//            directoryStream.forEach(p -> urlToHttpResponder.put(url + p.getFileName(), new PathContentResponder(p)));
-            directoryStream.forEach( p -> handle(url + p.getFileName(), new PathContentResponder(p)));
+            directoryStream.forEach(p -> handle(url + p.getFileName(), new PathContentResponder(p)));
+            
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
+        
+        urlToHttpResponder.entrySet().forEach(e -> System.out.println(e.getKey() + "::" + e.getValue()));
+        return this;
+    }
+
+    public ProgrammableHandler handle(final String url, final Path dir, final String glob, final String mime) {
+
+        try {
+            final DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dir, glob);
+            directoryStream.forEach(p -> handle(url + p.getFileName(), new PathContentResponder(p, mime)));
+
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
         return this;
     }
 

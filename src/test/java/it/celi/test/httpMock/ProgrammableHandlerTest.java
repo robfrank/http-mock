@@ -14,6 +14,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -46,6 +47,9 @@ public class ProgrammableHandlerTest {
                 .handle("/index.html", html)
                 .handle("/data.json", json)
                 .handle("/", Paths.get("./src/test/resources/"), "*.xml")
+                .handle("/service?file=", Paths.get("./src/test/resources/"), "*.xml")
+                //force to return xml files as json 
+                .handle("/serviceForced?file=", Paths.get("./src/test/resources/"), "*.xml",new MimeTypes().getMimeByExtension("forceMimeTo.json"))
                 .handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
 
         // start the server
@@ -114,6 +118,46 @@ public class ProgrammableHandlerTest {
             assertThat(contentFromHttp, equalTo(contentFromFile));
         }
 
+    }
+
+
+    @Test
+    public void shouldGetXmlsDataFromHttpGetParam() throws Exception {
+
+        for (final File xml : xmls) {
+
+            final ContentResponse response = httpClient.GET("http://localhost:8888/service?file=" + xml.getName());
+
+            assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+
+            assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/xml"));
+            final String contentFromHttp = response.getContentAsString();
+
+            final String contentFromFile = Files.toString(xml, Charsets.UTF_8);
+
+            assertThat(contentFromHttp, equalTo(contentFromFile));
+        }
+
+    }
+
+    @Test
+    public void shouldGetFocedMimeToJsonDataFromHttpGetParam() throws Exception {
+        
+        for (final File xml : xmls) {
+            
+            final ContentResponse response = httpClient.GET("http://localhost:8888/serviceForced?file=" + xml.getName());
+            
+            assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+            
+            //xml files are forced to be json
+            assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/json"));
+            final String contentFromHttp = response.getContentAsString();
+            
+            final String contentFromFile = Files.toString(xml, Charsets.UTF_8);
+            
+            assertThat(contentFromHttp, equalTo(contentFromFile));
+        }
+        
     }
 
 

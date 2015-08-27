@@ -16,13 +16,14 @@ public class PathContentResponder implements HttpResponder {
     private final String mime;
 
     public PathContentResponder(final Path path) {
-        super();
-        this.path = path;
-
-        final MimeTypes mimeTypes = new MimeTypes();
-        mime = mimeTypes.getMimeByExtension(path.getFileName().toString());
-
+        this(path, new MimeTypes().getMimeByExtension(path.getFileName().toString()));
     }
+
+    public PathContentResponder(final Path path, final String mime) {
+        this.path = path;
+        this.mime = mime;
+    }
+
 
     @Override
     public void reply(final HttpServletResponse response) throws IOException, ServletException {
@@ -30,6 +31,11 @@ public class PathContentResponder implements HttpResponder {
         final ServletOutputStream outputStream = response.getOutputStream();
 
         Files.copy(path, outputStream);
+    }
+
+    @Override
+    public String toString() {
+        return "path responder:: " + path.getFileName();
     }
 
 }

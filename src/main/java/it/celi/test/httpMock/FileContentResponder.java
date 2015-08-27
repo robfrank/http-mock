@@ -13,24 +13,29 @@ import com.google.common.io.Files;
 
 public class FileContentResponder implements HttpResponder {
 
-	private final File file;
-	private final String mime;
+    private final File file;
+    private final String mime;
 
-	public FileContentResponder(final File file) {
-		super();
-		this.file = file;
+    public FileContentResponder(final File file) {
+        this(file, new MimeTypes().getMimeByExtension(file.getName()));
+    }
 
-		final MimeTypes mimeTypes = new MimeTypes();
-		mime = mimeTypes.getMimeByExtension(file.getName());
+    public FileContentResponder(final File file, final String mime) {
+        this.file = file;
+        this.mime = mime;
+    }
 
-	}
+    @Override
+    public void reply(final HttpServletResponse response) throws IOException, ServletException {
+        response.setContentType(mime);
+        final ServletOutputStream outputStream = response.getOutputStream();
 
-	@Override
-	public void reply(final HttpServletResponse response) throws IOException, ServletException {
-		response.setContentType(mime);
-		final ServletOutputStream outputStream = response.getOutputStream();
+        Files.copy(file, outputStream);
+    }
 
-		Files.copy(file, outputStream);
-	}
+    @Override
+    public String toString() {
+        return "file responder:: " + file.getName();
+    }
 
 }
