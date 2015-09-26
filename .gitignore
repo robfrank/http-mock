@@ -9,6 +9,6 @@ target/
 .prefs
 
 #IntelliJ IDEA files
-.iml
+*.iml
 .idea/
 
