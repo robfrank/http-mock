@@ -1,18 +1,8 @@
 package it.celi.test.httpMock;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.io.Files;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.Server;
@@ -20,8 +10,16 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.List;
+
+import static com.google.common.base.Charsets.UTF_8;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.jetty.http.HttpHeader.CONTENT_TYPE;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
 
 public class ProgrammableHandlerTest {
 
@@ -49,7 +47,7 @@ public class ProgrammableHandlerTest {
                 .handle("/", Paths.get("./src/test/resources/"), "*.xml")
                 .handle("/service?file=", Paths.get("./src/test/resources/"), "*.xml")
                 //force to return xml files as json 
-                .handle("/serviceForced?file=", Paths.get("./src/test/resources/"), "*.xml",new MimeTypes().getMimeByExtension("forceMimeTo.json"))
+                .handle("/serviceForced?file=", Paths.get("./src/test/resources/"), "*.xml", new MimeTypes().getMimeByExtension("forceMimeTo.json"))
                 .handle("/index.php", HttpServletResponse.SC_NOT_FOUND);
 
         // start the server
@@ -73,14 +71,11 @@ public class ProgrammableHandlerTest {
 
         final ContentResponse response = httpClient.GET("http://localhost:8888/index.html");
 
-        assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+        assertThat(response.getStatus()).isEqualTo((OK_200));
 
-        assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("text/html"));
-        final String contentFromHttp = response.getContentAsString();
+        assertThat(response.getHeaders().get(CONTENT_TYPE)).isEqualTo(("text/html"));
 
-        final String contentFromFile = Files.toString(html, Charsets.UTF_8);
-
-        assertThat(contentFromHttp, equalTo(contentFromFile));
+        assertThat(response.getContentAsString()).isEqualTo((Files.toString(html, UTF_8)));
 
     }
 
@@ -90,14 +85,11 @@ public class ProgrammableHandlerTest {
 
         final ContentResponse response = httpClient.GET("http://localhost:8888/data.json");
 
-        assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+        assertThat(response.getStatus()).isEqualTo((OK_200));
 
-        assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/json"));
-        final String contentFromHttp = response.getContentAsString();
+        assertThat(response.getHeaders().get(CONTENT_TYPE)).isEqualTo(("application/json"));
 
-        final String contentFromFile = Files.toString(json, Charsets.UTF_8);
-
-        assertThat(contentFromHttp, equalTo(contentFromFile));
+        assertThat(response.getContentAsString()).isEqualTo((Files.toString(json, UTF_8)));
 
     }
 
@@ -108,18 +100,13 @@ public class ProgrammableHandlerTest {
 
             final ContentResponse response = httpClient.GET("http://localhost:8888/" + xml.getName());
 
-            assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+            assertThat(response.getStatus()).isEqualTo((OK_200));
 
-            assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/xml"));
-            final String contentFromHttp = response.getContentAsString();
+            assertThat(response.getHeaders().get(CONTENT_TYPE)).isEqualTo(("application/xml"));
 
-            final String contentFromFile = Files.toString(xml, Charsets.UTF_8);
-
-            assertThat(contentFromHttp, equalTo(contentFromFile));
+            assertThat(response.getContentAsString()).isEqualTo((Files.toString(xml, UTF_8)));
         }
-
     }
-
 
     @Test
     public void shouldGetXmlsDataFromHttpGetParam() throws Exception {
@@ -128,36 +115,30 @@ public class ProgrammableHandlerTest {
 
             final ContentResponse response = httpClient.GET("http://localhost:8888/service?file=" + xml.getName());
 
-            assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
+            assertThat(response.getStatus()).isEqualTo((OK_200));
 
-            assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/xml"));
-            final String contentFromHttp = response.getContentAsString();
+            assertThat(response.getHeaders().get(CONTENT_TYPE)).isEqualTo(("application/xml"));
 
-            final String contentFromFile = Files.toString(xml, Charsets.UTF_8);
-
-            assertThat(contentFromHttp, equalTo(contentFromFile));
+            assertThat(response.getContentAsString()).isEqualTo((Files.toString(xml, UTF_8)));
         }
 
     }
 
     @Test
     public void shouldGetFocedMimeToJsonDataFromHttpGetParam() throws Exception {
-        
+
         for (final File xml : xmls) {
-            
+
             final ContentResponse response = httpClient.GET("http://localhost:8888/serviceForced?file=" + xml.getName());
-            
-            assertThat(response.getStatus(), equalTo(HttpStatus.OK_200));
-            
+
+            assertThat(response.getStatus()).isEqualTo((OK_200));
+
             //xml files are forced to be json
-            assertThat(response.getHeaders().get(HttpHeader.CONTENT_TYPE), equalTo("application/json"));
-            final String contentFromHttp = response.getContentAsString();
-            
-            final String contentFromFile = Files.toString(xml, Charsets.UTF_8);
-            
-            assertThat(contentFromHttp, equalTo(contentFromFile));
+            assertThat(response.getHeaders().get(CONTENT_TYPE)).isEqualTo(("application/json"));
+
+            assertThat(response.getContentAsString()).isEqualTo((Files.toString(xml, UTF_8)));
         }
-        
+
     }
 
 
@@ -166,7 +147,7 @@ public class ProgrammableHandlerTest {
 
         final ContentResponse response = httpClient.GET("http://localhost:8888/index.php");
 
-        assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
+        assertThat(response.getStatus()).isEqualTo((HttpStatus.NOT_FOUND_404));
 
     }
 
@@ -175,7 +156,7 @@ public class ProgrammableHandlerTest {
 
         final ContentResponse response = httpClient.GET("http://localhost:8888/wrong.html");
 
-        assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND_404));
+        assertThat(response.getStatus()).isEqualTo((HttpStatus.NOT_FOUND_404));
 
     }
 

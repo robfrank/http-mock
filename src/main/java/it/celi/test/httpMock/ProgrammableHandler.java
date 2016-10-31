@@ -1,5 +1,14 @@
 package it.celi.test.httpMock;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.base.Joiner;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -8,16 +17,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Joiner;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 public class ProgrammableHandler extends AbstractHandler {
 
@@ -28,10 +28,10 @@ public class ProgrammableHandler extends AbstractHandler {
     private final Joiner urlQueryJoiner;
 
     public ProgrammableHandler() {
-        urlToHttpResponder = new HashMap<String, HttpResponder>();
+        urlToHttpResponder = new HashMap<>();
         urlQueryJoiner = Joiner.on('?').skipNulls();
 
-        final HttpResponder defaultResponder = new StatusCodeResponder(HttpServletResponse.SC_NOT_FOUND);
+        final HttpResponder defaultResponder = new StatusCodeResponder(SC_NOT_FOUND);
 
         responders = Functions.forMap(urlToHttpResponder, defaultResponder);
     }
@@ -41,7 +41,7 @@ public class ProgrammableHandler extends AbstractHandler {
             throws IOException, ServletException {
         baseRequest.setHandled(true);
 
-        
+
         final String lookup = urlQueryJoiner.join(url, baseRequest.getQueryString());
 
         final HttpResponder responder = responders.apply(lookup);
@@ -76,15 +76,15 @@ public class ProgrammableHandler extends AbstractHandler {
     }
 
     public ProgrammableHandler handle(final String url, final Path dir, final String glob) {
-        
+
         try {
             final DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dir, glob);
             directoryStream.forEach(p -> handle(url + p.getFileName(), new PathContentResponder(p)));
-            
+
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
-        
+
         urlToHttpResponder.entrySet().forEach(e -> System.out.println(e.getKey() + "::" + e.getValue()));
         return this;
     }
