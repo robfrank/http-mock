@@ -7,7 +7,7 @@
     <version>1.5.10-SNAPSHOT</version>
     <name>http-mock: mock the web</name>
     <properties>
-        <jetty.version>9.3.13.v20161014</jetty.version>
+        <jetty.version>9.4.41.v20210516</jetty.version>
     </properties>
 
     <scm>
